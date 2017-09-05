@@ -22,6 +22,8 @@ def train(data):
     n_node_temp1 = data[0].__len__()
     # Number of node of the temporary output layer of 2nd hidden layer
     n_node_temp2 = n_node_h1
+    # Learning rate
+    l_rate = 0.05
 
     # --- Placeholders ---
     # Placeholder for the input data
@@ -48,6 +50,34 @@ def train(data):
     # Accepts the data from the h2 as the input
     temp_out2 = {'weights': tf.Variable(tf.random_normal([n_node_h2,n_node_h1])),
           'bias': tf.Variable(tf.random_normal([n_node_h1])) }
+    
+    # --- Connecting the Network ---
+    # Adds the hidden layer 1 in tensorflow
+    h_layer_1 = tf.add(tf.matmul(x, h1['weights']),  h1['bias'])
+    h_layer_1 = tf.nn.sigmoid(h_layer_1) # Activation function
+    # Connects hidden layer 1 to temporary output 1
+    # This layer should be one to be optimized first
+    o_layer_1 = tf.add(tf.matmul(h_layer_1, temp_out1['weights']),  temp_out1['bias'])
+    o_layer_1 = tf.nn.sigmoid(o_layer_1)
+
+    # Adds the hidden layer 2 in tensorflow
+    h_layer_2 = tf.add(tf.matmul(h_layer_1, h2['weights']),  h2['bias'])
+    h_layer_2 = tf.nn.sigmoid(h_layer_2) # Activation function
+    # Connects hidden layer 2 to temporary output 2
+    # This layer should be one to be optimized second and be returned
+    o_layer_2 = tf.add(tf.matmul(h_layer_2, temp_out2['weights']),  temp_out2['bias'])
+    o_layer_2 = tf.nn.sigmoid(o_layer_2)
+
+    # --- Training ---
+
+    # Training hidden layer 1
+    prediction_1 = o_layer_1
+    # Calculates how far is the prediction to the expected output
+    cost_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = prediction, labels = y))
+    # Uses gradient descent to minimize the cost (Updating weights)
+    trainer_1 = tf.train.GradientDescentOptimizer(l_rate).minimize(cost)
+
+
 
     
 
