@@ -116,6 +116,8 @@ def train(data):
             sess.run(trainer_2, feed_dict={x: data, x2:evaluated, y2: evaluated})
         print("Evaluation : ", prediction_2.eval({x: data, x2: evaluated}))
         print("Hidden layer 2 accuracy : " ,  accuracy_2.eval({x: data, x2: evaluated, y2: evaluated}))
+    
+    return h_layer_2
 
 
 train([[1,1],[1,1]])
