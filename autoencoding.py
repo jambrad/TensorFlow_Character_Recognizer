@@ -28,6 +28,8 @@ def train(data):
     # --- Placeholders ---
     # Placeholder for the input data
     x = tf.placeholder('float',[None,n_input])
+    # Placeholder for the input of hidden layer 2 data
+    x2 = tf.placeholder('float',[None,n_node_h1])
     # Placeholder for the 1st temporary output layer
     y1 = tf.placeholder('float', [None, n_input])
     # Placeholder for the 2nd temporary output layer
@@ -65,19 +67,58 @@ def train(data):
     h_layer_2 = tf.nn.sigmoid(h_layer_2) # Activation function
     # Connects hidden layer 2 to temporary output 2
     # This layer should be one to be optimized second and be returned
-    o_layer_2 = tf.add(tf.matmul(h_layer_2, temp_out2['weights']),  temp_out2['bias'])
+    o_layer_2 = tf.add(tf.matmul(x2, temp_out2['weights']),  temp_out2['bias'])
     o_layer_2 = tf.nn.sigmoid(o_layer_2)
 
     # --- Training ---
 
-    # Training hidden layer 1
+    # Max iteration of training
+    max_epoch = 2000
+    # ---Training hidden layer 1---
     prediction_1 = o_layer_1
     # Calculates how far is the prediction to the expected output
-    cost_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = prediction, labels = y))
+    cost_1 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = prediction_1, labels = y1))
     # Uses gradient descent to minimize the cost (Updating weights)
-    trainer_1 = tf.train.GradientDescentOptimizer(l_rate).minimize(cost)
+    trainer_1 = tf.train.GradientDescentOptimizer(l_rate).minimize(cost_1)
+
+    # Accuracy model for hidden layer 1
+    correct_pred_1 = tf.equal(tf.argmax(prediction_1, 1), tf.argmax(y1, 1))
+    accuracy_1 = tf.reduce_mean(tf.cast(correct_pred_1, tf.float32))
+    # Session for training hidden layer 1
+    with tf.Session() as sess:
+        # Initializes the global variables
+        sess.run(tf.global_variables_initializer())
+
+        for epoch in range(max_epoch):
+            
+            sess.run(trainer_1, feed_dict={x:data, y1: data})
+        print("Hidden layer 1 accuracy : " ,  accuracy_1.eval({x: data, y1: data}))
+       
+    
+    # ---Training hidden layer 2---
+    prediction_2 = o_layer_2
+    # Calculates how far is the prediction to the expected output
+    cost_2 = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits = prediction_2, labels = y2))
+    # Uses gradient descent to minimize the cost (Updating weights)
+    trainer_2 = tf.train.GradientDescentOptimizer(l_rate).minimize(cost_2)
+
+    # Accuracy model for hidden layer 2
+    correct_pred_2 = tf.equal(tf.argmax(prediction_2, 1), tf.argmax(y2, 1))
+    accuracy_2 = tf.reduce_mean(tf.cast(correct_pred_2, tf.float32))
+    # Session for training hidden layer 1
+    with tf.Session() as sess:
+        # Initializes the global variables
+        sess.run(tf.global_variables_initializer())
+        evaluated = h_layer_1.eval({x: data})
+        print("Pre-eval: ", evaluated)
+        for epoch in range(max_epoch + 1000):
+            
+            sess.run(trainer_2, feed_dict={x: data, x2:evaluated, y2: evaluated})
+        print("Evaluation : ", prediction_2.eval({x: data, x2: evaluated}))
+        print("Hidden layer 2 accuracy : " ,  accuracy_2.eval({x: data, x2: evaluated, y2: evaluated}))
 
 
+train([[1,1],[1,1]])
 
     
 
