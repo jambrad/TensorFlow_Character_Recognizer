@@ -17,20 +17,72 @@ import cv2
 import numpy as numpy
 
 MAX_PIXEL_THRESHOLD = 255
-HALF_PIXEL_THRESHOLD = MAX_PIXEL / 2
+HALF_PIXEL_THRESHOLD = MAX_PIXEL_THRESHOLD / 2
 
 # Key: character, Value: expected outcome of the character
 expected_outcomes = {
-    '0' : [0, 0, 0, 0, 0, 0],
-    '1' : [1, 0, 0, 0, 0, 0],
-    '2' : [0, 1, 0, 0, 0, 0],
-    '3' : [1, 1, 0, 0, 0, 0],
-    '4' : [0, 0, 1, 0, 0, 0],
-    '5' : [1, 0, 1, 0, 0, 0],
-    '6' : [0, 1, 1, 0, 0, 0],
-    '7' : [1, 1, 1, 0, 0, 0],
-    '8' : [0, 0, 0, 1, 0, 0],
-    '9' : [1, 0, 0, 1, 0, 0]
+    '0'       : [0, 0, 0, 0, 0, 0],
+    '1'       : [1, 0, 0, 0, 0, 0],
+    '2'       : [0, 1, 0, 0, 0, 0],
+    '3'       : [1, 1, 0, 0, 0, 0],
+    '4'       : [0, 0, 1, 0, 0, 0],
+    '5'       : [1, 0, 1, 0, 0, 0],
+    '6'       : [0, 1, 1, 0, 0, 0],
+    '7'       : [1, 1, 1, 0, 0, 0],
+    '8'       : [0, 0, 0, 1, 0, 0],
+    '9'       : [1, 0, 0, 1, 0, 0],
+    'CapitalA': [0, 1, 0, 1, 0, 0],
+    'CapitalB': [1, 1, 0, 1, 0, 0],
+    'CapitalC': [0, 0, 1, 1, 0, 0],
+    'CapitalD': [1, 0, 1, 1, 0, 0],
+    'CapitalE': [0, 1, 1, 1, 0, 0],
+    'CapitalF': [1, 1, 1, 1, 0, 0],
+    'CapitalG': [0, 0, 0, 0, 1, 0],
+    'CapitalH': [1, 0, 0, 0, 1, 0],
+    'CapitalI': [0, 1, 0, 0, 1, 0],
+    'CapitalJ': [1, 1, 0, 0, 1, 0],
+    'CapitalK': [0, 0, 1, 0, 1, 0],
+    'CapitalL': [1, 0, 1, 0, 1, 0],
+    'CapitalM': [0, 1, 1, 0, 1, 0],
+    'CapitalN': [1, 1, 1, 0, 1, 0],
+    'CapitalO': [0, 0, 0, 1, 1, 0],
+    'CapitalP': [1, 0, 0, 1, 1, 0],
+    'CapitalQ': [0, 1, 0, 1, 1, 0],
+    'CapitalR': [1, 1, 0, 1, 1, 0],
+    'CapitalS': [0, 0, 1, 1, 1, 0],
+    'CapitalT': [1, 0, 1, 1, 1, 0],
+    'CapitalU': [0, 1, 1, 1, 1, 0],
+    'CapitalV': [1, 1, 1, 1, 1, 0],
+    'CapitalW': [0, 0, 0, 0, 0, 1],
+    'CapitalX': [1, 0, 0, 0, 0, 1],
+    'CapitalY': [0, 1, 0, 0, 0, 1],
+    'CapitalZ': [1, 1, 0, 0, 0, 1],
+    'LowerA'  : [0, 0, 1, 0, 0, 1],
+    'LowerB'  : [1, 0, 1, 0, 0, 1],
+    'LowerC'  : [0, 1, 1, 0, 0, 1],
+    'LowerD'  : [1, 1, 1, 0, 0, 1],
+    'LowerE'  : [0, 0, 0, 1, 0, 1],
+    'LowerF'  : [1, 0, 0, 1, 0, 1],
+    'LowerG'  : [0, 1, 0, 1, 0, 1],
+    'LowerH'  : [1, 1, 0, 1, 0, 1],
+    'LowerI'  : [0, 0, 1, 1, 0, 1],
+    'LowerJ'  : [1, 0, 1, 1, 0, 1],
+    'LowerK'  : [0, 1, 1, 1, 0, 1],
+    'LowerL'  : [1, 1, 1, 1, 0, 1],
+    'LowerM'  : [0, 0, 0, 0, 1, 1],
+    'LowerN'  : [1, 0, 0, 0, 1, 1],
+    'LowerO'  : [0, 1, 0, 0, 1, 1],
+    'LowerP'  : [1, 1, 0, 0, 1, 1],
+    'LowerQ'  : [0, 0, 1, 0, 1, 1],
+    'LowerR'  : [1, 0, 1, 0, 1, 1],
+    'LowerS'  : [0, 1, 1, 0, 1, 1],
+    'LowerT'  : [1, 1, 1, 0, 1, 1],
+    'LowerU'  : [0, 0, 0, 1, 1, 1],
+    'LowerV'  : [1, 0, 0, 1, 1, 1],
+    'LowerW'  : [0, 1, 0, 1, 1, 1],
+    'LowerX'  : [1, 1, 0, 1, 1, 1],
+    'LowerY'  : [0, 0, 1, 1, 1, 1],
+    'LowerZ'  : [1, 0, 1, 1, 1, 1]
 }
 
 # Get the entires dataset in the sub directory 'datasets'
@@ -98,4 +150,4 @@ def get_input(image_dir):
 def resolve_pixel(pixel): 
     # if the pixel is darker/less than half of the highest pixel value, returns 1
     # else if it's light/greater, returns 0
-    return 1 if pixel <= HALF_PIXEL else 0
+    return 1 if pixel <= HALF_PIXEL_THRESHOLD else 0
